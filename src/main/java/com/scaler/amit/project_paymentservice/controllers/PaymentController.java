@@ -3,10 +3,10 @@ package com.scaler.amit.project_paymentservice.controllers;
 import com.razorpay.RazorpayException;
 import com.scaler.amit.project_paymentservice.dtos.PaymentCallbackRequest;
 import com.scaler.amit.project_paymentservice.dtos.PaymentDto;
+import com.scaler.amit.project_paymentservice.exceptions.InvalidRefundException;
 import com.scaler.amit.project_paymentservice.exceptions.NotFoundException;
 import com.scaler.amit.project_paymentservice.models.Payment;
 import com.scaler.amit.project_paymentservice.services.PaymentService;
-import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,14 +33,27 @@ public class PaymentController {
     @GetMapping("/details/{orderId}")
     public ResponseEntity<PaymentDto> getPaymentDetails(@PathVariable String orderId) throws NotFoundException {
         Payment payment = paymentService.getPaymentDetails(orderId);
-        return new ResponseEntity<>(PaymentDto.from(payment,""), HttpStatus.OK);
+        return new ResponseEntity<>(PaymentDto.from(payment), HttpStatus.OK);
     }
 
     @GetMapping("/status/{paymentId}")
-    public ResponseEntity<String> getPaymentStatus(@PathVariable String paymentId) throws NotFoundException, RazorpayException {
-        String response = paymentService.fetchPaymentStatus_Razorpay(paymentId).toString();
+    public ResponseEntity<String> getPaymentStatus(@PathVariable String paymentId) throws RazorpayException {
+        String response = paymentService.fetchPaymentStatus_Razorpay(paymentId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PostMapping("/create-refund/{orderId}")
+    public ResponseEntity<PaymentDto> createRefund(@PathVariable String orderId) throws NotFoundException, InvalidRefundException, RazorpayException {
+        Payment payment = paymentService.createRefund(orderId);
+        return new ResponseEntity<>(PaymentDto.from(payment), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/status/refund/{refundId}")
+    public ResponseEntity<String> getRefundStatus(@PathVariable String refundId) throws RazorpayException {
+        String response = paymentService.fetchRefundStatus(refundId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
     @GetMapping("/callback")
     public String handlePaymentCallback(

@@ -2,6 +2,7 @@ package com.scaler.amit.project_paymentservice.advices;
 
 import com.razorpay.RazorpayException;
 import com.scaler.amit.project_paymentservice.dtos.ExceptionDto;
+import com.scaler.amit.project_paymentservice.exceptions.InvalidRefundException;
 import com.scaler.amit.project_paymentservice.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,12 @@ public class ControllerAdvices {
     ResponseEntity<ExceptionDto> handleNotFoundException(NotFoundException ex){
         ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.NOT_FOUND, ex.getMessage());
         return new ResponseEntity<>(exceptionDto, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidRefundException.class)
+    ResponseEntity<ExceptionDto> handleInvalidRefundException(InvalidRefundException ex){
+        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return new ResponseEntity<>(exceptionDto, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RazorpayException.class)

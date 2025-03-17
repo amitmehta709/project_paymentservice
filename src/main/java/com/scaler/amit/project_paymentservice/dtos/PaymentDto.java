@@ -14,12 +14,17 @@ public class PaymentDto {
     private String paymentLink;
 
     public static PaymentDto from(Payment payment, String paymentLink) {
+        PaymentDto paymentDto = from(payment);
+        paymentDto.setPaymentLink(paymentLink);
+        return paymentDto;
+    }
+
+    public static PaymentDto from(Payment payment) {
         PaymentDto paymentDto = new PaymentDto();
         paymentDto.setOrderId(payment.getOrderId());
         paymentDto.setPaymentId(payment.getPaymentId());
         paymentDto.setRefundId(payment.getRefundId());
         paymentDto.setStatus(payment.getStatus());
-        paymentDto.setPaymentLink(paymentLink);
         return paymentDto;
     }
 }
